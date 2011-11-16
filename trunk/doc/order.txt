@@ -1,0 +1,50 @@
+0	NOP
+-- 2 regs
+1	ADDIU3
+2	AND
+3	CMP
+4	LW
+5	MOVE
+6	NEG
+7	NOT
+8	OR
+9	SLL
+10	SLLV
+11	SLT
+12	SLTU
+13	SRA
+14	SRAV
+15	SRL
+16	SRLV
+17	SW
+18	XOR
+-- 3 regs
+19	ADDU
+20	SUBU
+-- 1 left reg
+21	ADDIU
+22	ADDSP3
+23	BEQZ
+24	BNEZ
+25	CMPI
+26	JALR
+27	JR
+28	LI
+29	LW_SP
+30	MFIH
+31	MFPC
+32	MTIH
+33	SLTI
+34	SLTUI
+35	SW_SP
+-- 1 right reg
+36	MTSP
+-- no reg
+37	ADDSP  --imm 8
+38	SW_RS  --imm 8
+39	BTEQZ  --imm 8
+40	BTNEZ  --imm 8
+41	INT    --imm 4
+42	JRRA   --imm 0
+43	B      --imm 11
+44	HALT

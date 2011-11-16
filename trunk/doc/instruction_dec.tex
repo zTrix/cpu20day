@@ -1,0 +1,219 @@
+\documentclass[10pt]{article}
+
+\usepackage{CJK}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{longtable}
+\newcommand{\zcell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+\begin{document}
+\title{Instruction Decomposition Table}
+\author{zwl}
+\maketitle
+
+\section{Instruction}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}\hline
+15&14&13&12&11&10&9&8&7&6&5&4&3&2&1&0\\\hline
+\multicolumn{5}{|c|}5&\multicolumn{3}{|c|}3&\multicolumn{3}{|c|}3&\multicolumn{5}{|c|}5\\\hline
+\multicolumn{5}{|c|}{op code}&\multicolumn{3}{|c|}{rx}&\multicolumn{3}{|c|}{ry}&\multicolumn{5}{|c|}{rz or imm}\\\hline
+\end{tabular}
+\end{center}
+
+\section{Instruction pipeline decomposition}
+\begin{center}
+\begin{longtable}{|c|c|c|c|c|c|}\hline
+no.&instruction& ID               & EXE               & MEM                     & WB \\\hline
+0  &   NOP     &                  &                   &                         &    \\\hline
+1  &  ADDIU3   &\zcell{c}{o1=rx}  &\zcell{c}{op=ADD\\ 
+								   A=i1\\
+								   B=instr[3:0]\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[7:5]\\
+														                         write\_reg='1'}\\\hline
+2  &  AND      &\zcell{c}{o1=rx\\                                                      
+				o2=ry}            &\zcell{c}{op=AND\\ 
+								   A=i1\\
+								   B=i2\\oData=Y}     &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+3  & CMP       &\zcell{c}{o1=rx\\                                                            
+				o2=ry}            &\zcell{c}{op=CMP\\ 
+								   A=i1\\
+								   B=i2\\oData=Y}     &                         &    \\\hline
+4  & LW        &\zcell{c}{o1=rx}  &\zcell{c}{A=i1\\
+							       B=instr[4:0]\\
+								   oAddr=Y}           &\zcell{c}{ram\_we='1'\\
+													   data\_out=data\_read}    &\zcell{c}{
+																				 reg\_addr=instr[7:5]\\
+														                         write\_reg='1'}\\\hline
+5  & MOVE      &\zcell{c}{o2=ry}  &oData=i2           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+6  & NEG       &\zcell{c}{o2=ry}  &\zcell{c}{op=SUB\\ 
+								   A=0\\
+								   B=i2\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+7  & NOT       &\zcell{c}{o2=ry}  &\zcell{c}{op=NOT\\ 
+								   A=i2\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+8  & OR        &\zcell{c}{o1=rx\\                                                            
+				o2=ry}            &\zcell{c}{op=OR\\
+								   A=i1\\B=i2\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+9  & SLL       &\zcell{c}{o2=ry}  &\zcell{c}{op=SLL\\ 
+								   A=i2\\B=imm or 8\\ 
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+10 & SLLV      &\zcell{c}{o1=rx\\                                                            
+				o2=ry}            &\zcell{c}{op=SLL\\ 
+								   A=i2\\B=i1\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[7:5]\\
+														                         write\_reg='1'}\\\hline
+11 & SLT       &\zcell{c}{o1=rx\\                                                            
+				o2=ry}            &\zcell{c}{op=LT\\ 
+								   A=i1\\B=i2\\
+								   oData=Y}           &                         &    \\\hline
+12 & SLTU      &\zcell{c}{o1=rx\\                                                            
+				o2=ry}            &\zcell{c}{op=LTU\\
+								   A=i1\\B=i2\\
+								   oData=Y}           &                         &    \\\hline
+13 & SRA       &\zcell{c}{o2=ry}  &\zcell{c}{op=SRA\\
+								   A=i2\\B=imm or 8\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+14 & SRAV      &\zcell{c}{o1=rx\\                                                            
+                o2=ry}            &\zcell{c}{op=SRA\\
+								   A=i2\\B=i1\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[7:5]\\
+														                         write\_reg='1'}\\\hline
+15 & SRL       &\zcell{c}{o2=ry}  &\zcell{c}{op=SRL\\
+								   A=i2\\B=imm or 8\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+16 & SRLV      &\zcell{c}{o1=rx\\                                                            
+                o2=ry}            &\zcell{c}{op=SRL\\
+								   A=i2\\B=i1\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[7:5]\\
+														                         write\_reg='1'}\\\hline
+17 & SW        &\zcell{c}{o1=rx\\                                        
+                o2=ry}            &\zcell{c}{op=ADD\\
+								   A=i1\\
+								   B=instr[4:0]\\
+								   oData=i2\\
+								   oAddr=Y}           &ram\_we='0'              &    \\\hline
+18 & XOR       &\zcell{c}{o1=rx\\                                        
+                o2=ry}            &\zcell{c}{op=XOR\\
+								   A=i1\\B=i2\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+19 & ADDU      &\zcell{c}{o1=rx\\                                                            
+                o2=ry}            &\zcell{c}{op=ADD\\
+								   A=i1\\B=i2\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[4:2]\\
+														                         write\_reg='1'}\\\hline
+20 & SUBU      &\zcell{c}{o1=rx\\                                                            
+                o2=ry}            &\zcell{c}{op=SUB\\
+								   A=i1\\B=i2\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[4:2]\\
+														                         write\_reg='1'}\\\hline
+21 & ADDIU     &\zcell{c}{o1=rx}  &\zcell{c}{op=ADD\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+22 & ADDSP3    &o1=SP             &\zcell{c}{op=ADD\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y}           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+23 & BEQZ      &\zcell{c}{o1=rx\\
+				o2=PC       }     &\zcell{c}{op=ADD\\
+								   A=i2\\B=instr[7:0]\\
+								   oData=Y\\
+								   oAddr=i1}          &                         &    \\\hline
+24 & BNEZ      &\zcell{c}{o1=rx\\
+				o2=PC       }     &\zcell{c}{op=ADD\\
+								   A=i2\\B=instr[7:0]\\
+								   oData=Y\\
+								   oAddr=i1}          &                         &    \\\hline
+25 & CMPI      &\zcell{c}{o1=rx}  &\zcell{c}{op=EQ\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y}           &                         &    \\\hline
+26 & JALR      &\zcell{c}{o1=rx\\
+				o2=PC       }     &\zcell{c}{oData=i1\\
+								   oAddr=i2}          &                         &    \\\hline
+27 & JR        &\zcell{c}{o1=rx}  &oData=i1           &                         &    \\\hline
+28 & LI        &                  &                   &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+29 & LW\_SP    &o1=SP             &\zcell{c}{op=ADD\\
+								   A=i1\\B=instr[7:0]\\
+								   oAddr=Y}           &\zcell{c}{ram\_we='1'\\
+													   data\_out=data\_read}    &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+30 & MFIH      &o1=IH             &oData=i1           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+31 & MFPC      &o1=PC             &oData=i1           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+32 & MTIH      &\zcell{c}{o1=rx}  &oData=i1           &                         &\zcell{c}{
+																				 reg\_addr=instr[10:8]\\
+														                         write\_reg='1'}\\\hline
+33 & SLTI      &\zcell{c}{o1=rx}  &\zcell{c}{op=LT\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y}           &                         &    \\\hline
+34 & SLTUI     &\zcell{c}{o1=rx}  &\zcell{c}{op=LT\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y}           &                         &    \\\hline
+35 & SW\_SP    &\zcell{c}{o1=rx\\
+				o2=SP       }     &\zcell{c}{op=ADD\\
+								   A=i2\\B=instr[7:0]\\
+								   oData=i1\\
+								   oAddr=Y}           &ram\_we='0'              &    \\\hline
+36 & MTSP      &\zcell{c}{o1=rx}  &oData=i1           &                         &    \\\hline
+37 & ADDSP     &o1=SP             &\zcell{c}{op=ADD\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y}           &                         &    \\\hline
+38 & SW\_RS    &\zcell{c}{o1=SP\\
+				o2=RA}            &\zcell{c}{op=ADD\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=i2\\
+								   oAddr=Y}           &ram\_we='0'              &    \\\hline
+39 & BTEQZ     &\zcell{c}{o1=PC\\
+				o2=T}             &\zcell{c}{op=ADD\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y\\
+								   oAddr=i2}          &                         &    \\\hline
+40 & BTNEZ     &\zcell{c}{o1=PC\\
+				o2=T       }      &\zcell{c}{op=ADD\\
+								   A=i1\\B=instr[7:0]\\
+								   oData=Y\\
+								   oAddr=i2}          &                         &    \\\hline
+41 & INT       &                  &                   &ram\_we='0'              &    \\\hline
+42 & JRRA      &o1=RA             &oData=i1           &                         &    \\\hline
+43 & B         &o1=PC             &oData=i1           &                         &    \\\hline
+
+
+\end{longtable}
+\end{center}
+
+\end{document}
+
